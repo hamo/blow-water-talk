@@ -25,4 +25,5 @@ func NewApi(appid string, secret string) (re *Api) {
 	re.Secret = secret
 
 	re.BaseURL = ApiBaseURL
+	return
 }
