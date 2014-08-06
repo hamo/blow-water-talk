@@ -1,6 +1,8 @@
 package main
 
 import (
+	"bytes"
+	"encoding/xml"
 	"fmt"
 	"net/http"
 	"weixin"
@@ -21,7 +23,9 @@ var handlerMatrix = map[string]map[string]HttpApiFunc{
 	"GET": {
 		"/blow-water": getVerify,
 	},
-	"POST": {},
+	"POST": {
+		"/blow-water": postMessage,
+	},
 }
 
 func getVerify(w http.ResponseWriter, r *http.Request) {
@@ -56,6 +60,26 @@ func getVerify(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte(echostr))
 		return
 	}
+
+badReq:
+	w.WriteHeader(http.StatusBadRequest)
+	return
+}
+
+func postMessage(w http.ResponseWriter, r *http.Request) {
+	m := make([]byte, r.ContentLength)
+	r.Body.Read(m)
+
+	fmt.Printf("Message received: %s\n", string(m))
+
+	d := xml.NewDecoder(bytes.NewReader(m))
+
+	mrb := new(weixin.MessageReceiveBase)
+	if err := d.Decode(mrb); err != nil {
+		goto badReq
+	}
+
+	return
 
 badReq:
 	w.WriteHeader(http.StatusBadRequest)
