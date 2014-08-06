@@ -19,7 +19,7 @@ func makeHttpHandler(localMethod string, localRoute string, handlerFunc HttpApiF
 
 var handlerMatrix = map[string]map[string]HttpApiFunc{
 	"GET": {
-		"/verify": getVerify,
+		"/blow-water": getVerify,
 	},
 	"POST": {},
 }
@@ -27,9 +27,9 @@ var handlerMatrix = map[string]map[string]HttpApiFunc{
 func getVerify(w http.ResponseWriter, r *http.Request) {
 	params := r.URL.Query()
 	var signature string
-var timestamp string
-var nonce string
-var echostr string 
+	var timestamp string
+	var nonce string
+	var echostr string
 
 	signature = params.Get("signature")
 	if signature == "" {
@@ -71,6 +71,8 @@ func newRouter() http.Handler {
 			switch method {
 			case "GET":
 				h.Get(route, f)
+			case "POST":
+				h.Post(route, f)
 			}
 		}
 	}

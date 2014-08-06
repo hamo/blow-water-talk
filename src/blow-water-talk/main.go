@@ -1,10 +1,8 @@
 package main
 
-import (
-)
+import ()
 
 func main() {
-
 	serv := newAPIServer()
 	panic(serv.ListenAndServe())
 }
