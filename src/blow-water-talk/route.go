@@ -1,8 +1,6 @@
 package main
 
 import (
-	"bytes"
-	"encoding/xml"
 	"fmt"
 	"net/http"
 	"weixin"
@@ -72,10 +70,9 @@ func postMessage(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Printf("Message received: %s\n", string(m))
 
-	d := xml.NewDecoder(bytes.NewReader(m))
+	t, p, err := weixin.MessageDecodeReceive(string(m))
 
-	mrb := new(weixin.MessageReceiveBase)
-	if err := d.Decode(mrb); err != nil {
+	if err != nil {
 		goto badReq
 	}
 

@@ -1,6 +1,15 @@
 package weixin
 
-import ()
+import (
+	"encoding/xml"
+	"errors"
+	"fmt"
+	"strings"
+)
+
+var (
+	ErrMessageFormat = errors.New("")
+)
 
 type MessageBase struct {
 	ToUserName   string
@@ -30,7 +39,7 @@ type MessageReceiveImage struct {
 	MediaId string
 }
 
-type MessageReceiveAudio struct {
+type MessageReceiveVoice struct {
 	MessageReceiveBase
 
 	MediaId string
@@ -98,3 +107,46 @@ type MessageSendMusic struct {
 }
 
 //type MessageSendTextAndImage struct
+
+func MessageDecodeReceive(msg string) (MsgType string, p interface{}, err error) {
+	d := xml.NewDecoder(strings.NewReader(msg))
+
+	mrb := new(MessageReceiveBase)
+	var t string
+	var re interface{}
+
+	if err := d.Decode(mrb); err != nil {
+		goto errDecode
+	}
+
+	t = mrb.MsgType
+
+	// reset Decoder
+	d = xml.NewDecoder(strings.NewReader(msg))
+
+	switch t {
+	case "text":
+		re = new(MessageReceiveText)
+	case "image":
+		re = new(MessageReceiveImage)
+	case "voice":
+		re = new(MessageReceiveVoice)
+	case "video":
+		re = new(MessageReceiveVideo)
+	case "location":
+		re = new(MessageReceiveLocal)
+	case "link":
+		re = new(MessageReceiveLink)
+	default:
+		goto errDecode
+	}
+
+	if err := d.Decode(re); err != nil {
+		goto errDecode
+	}
+
+	return t, re, nil
+
+errDecode:
+	return "", nil, ErrMessageFormat
+}
