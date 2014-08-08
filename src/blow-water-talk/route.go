@@ -65,6 +65,8 @@ badReq:
 }
 
 func postMessage(w http.ResponseWriter, r *http.Request) {
+	answer := make(chan []byte, 1)
+
 	m := make([]byte, r.ContentLength)
 	r.Body.Read(m)
 
@@ -76,6 +78,9 @@ func postMessage(w http.ResponseWriter, r *http.Request) {
 		goto badReq
 	}
 
+	go msgHandle(answer, t, p)
+
+	w.Write(<-answer)
 	return
 
 badReq:

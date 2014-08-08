@@ -3,8 +3,8 @@ package weixin
 import (
 	"encoding/xml"
 	"errors"
-	"fmt"
 	"strings"
+	"time"
 )
 
 var (
@@ -14,7 +14,7 @@ var (
 type MessageBase struct {
 	ToUserName   string
 	FromUserName string
-	CreateTime   int
+	CreateTime   int64
 	MsgType      string
 }
 
@@ -74,18 +74,24 @@ type MessageSendText struct {
 	MessageSendBase
 
 	Content string
+
+	XMLName struct{} `xml:"xml"`
 }
 
 type MessageSendImage struct {
 	MessageSendBase
 
 	MediaId string
+
+	XMLName struct{} `xml:"xml"`
 }
 
 type MessageSendAudio struct {
 	MessageSendBase
 
 	MediaId string
+
+	XMLName struct{} `xml:"xml"`
 }
 
 type MessageSendVideo struct {
@@ -94,6 +100,8 @@ type MessageSendVideo struct {
 	MediaId     string
 	Title       string
 	Description string
+
+	XMLName struct{} `xml:"xml"`
 }
 
 type MessageSendMusic struct {
@@ -104,6 +112,8 @@ type MessageSendMusic struct {
 	MusicURL     string
 	HQMusicUrl   string
 	ThumbMediaId string
+
+	XMLName struct{} `xml:"xml"`
 }
 
 //type MessageSendTextAndImage struct
@@ -149,4 +159,19 @@ func MessageDecodeReceive(msg string) (MsgType string, p interface{}, err error)
 
 errDecode:
 	return "", nil, ErrMessageFormat
+}
+
+func MessageCreateText(from, to, content string) *MessageSendText {
+	re := new(MessageSendText)
+
+	re.FromUserName = from
+	re.ToUserName = to
+	re.MsgType = "text"
+
+	// FIXME: location
+	re.CreateTime = time.Now().Unix()
+
+	re.Content = content
+
+	return re
 }
