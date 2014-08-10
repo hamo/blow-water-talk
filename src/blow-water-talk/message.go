@@ -8,48 +8,29 @@ import (
 )
 
 func msgHandle(answer chan []byte, t string, p interface{}) {
-	var from string
-	var to string
-
 	switch t {
 	case "text":
 		msgHandleText(answer, p.(*weixin.MessageReceiveText))
 
 	// FIXME: Just for Maimeng
 	case "image":
-		from = p.(*weixin.MessageReceiveImage).ToUserName
-		to = p.(*weixin.MessageReceiveImage).FromUserName
-		goto maimeng
+		msgHandleImage(answer, p.(*weixin.MessageReceiveImage))
 	case "voice":
-		from = p.(*weixin.MessageReceiveVoice).ToUserName
-		to = p.(*weixin.MessageReceiveVoice).FromUserName
-		goto maimeng
+		msgHandleVoice(answer, p.(*weixin.MessageReceiveVoice))
 	case "video":
-		from = p.(*weixin.MessageReceiveVideo).ToUserName
-		to = p.(*weixin.MessageReceiveVideo).FromUserName
-		goto maimeng
+		msgHandleVideo(answer, p.(*weixin.MessageReceiveVideo))
 	case "location":
-		from = p.(*weixin.MessageReceiveLocal).ToUserName
-		to = p.(*weixin.MessageReceiveLocal).FromUserName
-		goto maimeng
+		msgHandleLocal(answer, p.(*weixin.MessageReceiveLocal))
 	case "link":
-		from = p.(*weixin.MessageReceiveLink).ToUserName
-		to = p.(*weixin.MessageReceiveLink).FromUserName
-		goto maimeng
+		msgHandleLink(answer, p.(*weixin.MessageReceiveLink))
 	default:
 		return
 	}
-
-maimeng:
-	a := weixin.MessageCreateText(from, to, "讨厌啦，人家还没学会呢～")
-	x, _ := xml.Marshal(a)
-	answer <- x
-	return
 }
 
-func msgHandleText(answer chan []byte, text *weixin.MessageReceiveText) {
-	from := text.ToUserName
-	to := text.FromUserName
+func msgHandleText(answer chan []byte, msg *weixin.MessageReceiveText) {
+	from := msg.ToUserName
+	to := msg.FromUserName
 
 	a := weixin.MessageCreateText(from, to, "Hello 世界")
 
@@ -57,5 +38,56 @@ func msgHandleText(answer chan []byte, text *weixin.MessageReceiveText) {
 
 	fmt.Printf("%s\n", string(x))
 	answer <- x
+	return
+}
 
+func msgHandleImage(answer chan []byte, msg *weixin.MessageReceiveImage) {
+	from := msg.ToUserName
+	to := msg.FromUserName
+
+	a := weixin.MessageCreateText(from, to, "讨厌啦，人家还没学会呢～")
+	x, _ := xml.Marshal(a)
+	answer <- x
+	return
+}
+
+func msgHandleVoice(answer chan []byte, msg *weixin.MessageReceiveVoice) {
+
+	from := msg.ToUserName
+	to := msg.FromUserName
+
+	a := weixin.MessageCreateText(from, to, "讨厌啦，人家还没学会呢～")
+	x, _ := xml.Marshal(a)
+	answer <- x
+	return
+}
+
+func msgHandleVideo(answer chan []byte, msg *weixin.MessageReceiveVideo) {
+	from := msg.ToUserName
+	to := msg.FromUserName
+
+	a := weixin.MessageCreateText(from, to, "讨厌啦，人家还没学会呢～")
+	x, _ := xml.Marshal(a)
+	answer <- x
+	return
+}
+
+func msgHandleLocal(answer chan []byte, msg *weixin.MessageReceiveLocal) {
+	from := msg.ToUserName
+	to := msg.FromUserName
+
+	a := weixin.MessageCreateText(from, to, "讨厌啦，人家还没学会呢～")
+	x, _ := xml.Marshal(a)
+	answer <- x
+	return
+}
+
+func msgHandleLink(answer chan []byte, msg *weixin.MessageReceiveLink) {
+	from := msg.ToUserName
+	to := msg.FromUserName
+
+	a := weixin.MessageCreateText(from, to, "讨厌啦，人家还没学会呢～")
+	x, _ := xml.Marshal(a)
+	answer <- x
+	return
 }
